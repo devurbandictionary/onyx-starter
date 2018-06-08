@@ -4,7 +4,7 @@
 ;;; tasks that data can flow between.
 
 (def workflow
-  [[:in :split-by-spaces]
+  [[:in-db :split-by-spaces]
    [:split-by-spaces :mixed-case]
    [:mixed-case :loud]
    [:mixed-case :question]

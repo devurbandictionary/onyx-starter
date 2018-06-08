@@ -1,7 +1,8 @@
 (ns onyx-starter.lifecycles.sample-lifecycle
   (:require [clojure.core.async :refer [chan sliding-buffer >!!]]
             [onyx.plugin.core-async :refer [take-segments!]]
-            [onyx.static.planning :refer [find-task]]))
+            [onyx.static.planning :refer [find-task]]
+            [clojure.java.io :as io]))
 
 ;;; Lifecycles are hooks to add in extra code between predefined
 ;;; points in the execution of a task on a peer.
@@ -56,21 +57,44 @@
 (def out-calls
   {:lifecycle/before-task-start inject-out-ch})
 
+(defn log-step [event lifecycle]
+  (with-open [wrtr (io/writer "glenns-onyx.log")]
+    (clojure.pprint/pprint event wrtr))
+  {})
+
+(def log-step-calls
+  {:lifecycle/before-task-start log-step})
+
+; Glenn says:
+; Lifecycles are things that manage stateful aspects of your nodes like hooking up the channel in the in-memory example
+; I think these run on the worker nodes at various times
+
 (defn build-lifecycles []
-  [{:lifecycle/task :in
+  [{:lifecycle/task :all
+    :lifecycle/calls :onyx-starter.lifecycles.sample-lifecycle/log-step-calls}
+
+   {:lifecycle/task :in-db
+    :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+
+   #_{:lifecycle/task :in
     :core.async/id (java.util.UUID/randomUUID)
     :lifecycle/calls :onyx-starter.lifecycles.sample-lifecycle/in-calls}
-   {:lifecycle/task :in
+
+   #_{:lifecycle/task :in
     :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+
    {:lifecycle/task :loud-output
     :lifecycle/calls :onyx-starter.lifecycles.sample-lifecycle/out-calls
     :core.async/id (java.util.UUID/randomUUID)
     :lifecycle/doc "Lifecycle for writing to a core.async chan"}
+
    {:lifecycle/task :loud-output
     :lifecycle/calls :onyx.plugin.core-async/writer-calls}
+
    {:lifecycle/task :question-output
     :lifecycle/calls :onyx-starter.lifecycles.sample-lifecycle/out-calls
     :core.async/id (java.util.UUID/randomUUID)
     :lifecycle/doc "Lifecycle for writing to a core.async chan"}
+
    {:lifecycle/task :question-output
     :lifecycle/calls :onyx.plugin.core-async/writer-calls}])

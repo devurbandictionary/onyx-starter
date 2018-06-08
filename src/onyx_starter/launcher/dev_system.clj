@@ -1,5 +1,6 @@
 (ns onyx-starter.launcher.dev-system
   (:require [clojure.core.async :refer [chan <!!]]
+            [onyx.plugin.sql]
             [clojure.java.io :refer [resource]]
             [com.stuartsierra.component :as component]
             [onyx.plugin.core-async]

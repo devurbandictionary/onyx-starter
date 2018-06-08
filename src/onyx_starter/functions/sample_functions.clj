@@ -5,6 +5,8 @@
 ;;; with fully qualified namespaced keywords, such as
 ;;; onyx-starter.functions.sample-functions/format-line
 
+(println "reloading functions")
+
 (defn split-by-spaces-impl [s]
   (clojure.string/split s #"\s+"))
 
@@ -21,6 +23,7 @@
 
 ;;;;; Destructuring functions ;;;;;
 (defn split-by-spaces [segment]
+  (println (pr-str segment))
   (map (fn [word] {:word word}) (split-by-spaces-impl (:sentence segment))))
 
 (defn mixed-case [segment]
