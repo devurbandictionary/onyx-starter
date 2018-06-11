@@ -25,11 +25,18 @@
   (stop [component]
     (println "Stopping Onyx development environment")
 
-    (doseq [v-peer (:peers component)]
-      (onyx.api/shutdown-peer v-peer))
+    (doseq [[i v-peer] (map-indexed vector (:peers component))]
+      (print "Stopping peer " i "...")
+      (onyx.api/shutdown-peer v-peer)
+      (println "done."))
 
+    (println "Stopping peer-group")
     (onyx.api/shutdown-peer-group (:peer-group component))
+    (println "Stopped peer-group")
+
+    (println "Stopping env")
     (onyx.api/shutdown-env (:env component))
+    (println "Stopped env")
 
     (assoc component :env nil :peer-group nil :peers nil)))
 
