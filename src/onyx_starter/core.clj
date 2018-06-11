@@ -6,4 +6,5 @@
   (println "Running!")
   (user/go)
   (prn (job/submit-job user/system))
+  (user/stop)
   (println "Done!"))
